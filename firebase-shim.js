@@ -19,6 +19,8 @@
     if(/invalid-credential|wrong-password|user-not-found|invalid-email/.test(code||'')) return 'Identifiants incorrects.';
     if(/too-many-requests/.test(code||'')) return 'Trop de tentatives, réessayez plus tard.';
     if(/network/.test(code||'')) return 'Connexion Internet indisponible.';
+    if(/unauthorized-domain/.test(code||'')) return "Domaine non autorisé : ajoutez "+location.hostname+" dans Firebase > Authentication > Paramètres > Domaines autorisés.";
+    if(/operation-not-allowed/.test(code||'')) return "Connexion par e-mail/mot de passe non activée dans Firebase > Authentication.";
     return 'Connexion impossible ('+(code||'erreur')+').';
   }
 
@@ -95,7 +97,10 @@
           onSnapshot:function(fn,errFn){
             return m.onSnapshot(col,function(s){
               fn({docs:s.docs.map(function(d){ return {id:d.id,exists:true,data:function(){ return d.data(); }}; })});
-            },errFn);
+            },function(err){
+              window.FIREBASE_ERROR=(err&&err.code==='permission-denied')?"accès refusé par les règles Firestore (votre e-mail doit figurer dans firestore.rules, puis « firebase deploy --only firestore:rules »)":((err&&(err.code||err.message))||'erreur Firestore');
+              console.error('Firestore:',err); if(errFn) errFn(err);
+            });
           }
         };
       }
@@ -111,7 +116,10 @@
           setTimeout(function(){ URL.revokeObjectURL(url); },4000);
         }};
       }
-      if(name==='db'){ var m=await load(); await ensureUser(m); return makeDb(m); }
+      if(name==='db'){
+        try{ var m=await load(); await ensureUser(m); return makeDb(m); }
+        catch(e){ window.FIREBASE_ERROR=(e&&(e.message||e.code))||'erreur inconnue'; console.error('Firebase:',e); throw e; }
+      }
       if(name==='user'){ var m2=await load(); return { can:async function(){ return !!m2.auth.currentUser; } }; }
       return null;
     }

@@ -345,7 +345,7 @@ function canWriteNow(){ return !!DB && canWrite && synced; }
 function setSync(msg){ const n=document.getElementById('saveNote'); if(n) n.textContent=msg; }
 function setBanner(msg){ const b=document.getElementById('banner'); if(!b) return; b.textContent=msg||''; b.style.display=msg?'':'none'; }
 function updateBanner(){
-  if(dbFailed||(dbChecked&&!DB)) setBanner("Stockage partagé indisponible : vérifiez la connexion Internet et la configuration Firebase. Aucune donnée ne peut être enregistrée.");
+  if(dbFailed||(dbChecked&&!DB)) setBanner("Stockage partagé indisponible : vérifiez la connexion Internet et la configuration Firebase. Aucune donnée ne peut être enregistrée."+(window.FIREBASE_ERROR?" — Détail : "+window.FIREBASE_ERROR:""));
   else if(DB&&!canWrite) setBanner("Accès en lecture seule : connectez-vous avec un compte autorisé pour saisir des inventaires.");
   else setBanner('');
 }

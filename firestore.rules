@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Remplacez par les adresses e-mail des personnes autorisées (comptes créés dans Authentication).
+    function autorise() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'prenom.nom@exemple.fr',
+          'autre.personne@exemple.fr'
+        ];
+    }
+    // records (formulaires en cours), archives (suivi) et photos
+    match /{document=**} {
+      allow read, write: if autorise();
+    }
+  }
+}
