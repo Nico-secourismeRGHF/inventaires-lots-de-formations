@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Registre d'inventaire — Lots PSC / STG</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧰</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1c2b3a; --navy-2:#233a4e; --paper:#f4f2ec; --paper-2:#ffffff;
+  --ink:#1c2420; --ink-soft:#5a6470; --line:#d8d3c6;
+  --ok:#2f6b3c; --ok-bg:#e4efe3; --warn:#9a5c14; --warn-bg:#f7e9d3; --bad:#9a2f28; --bad-bg:#f5e0dd;
+  --psc:#1f7a4a; --stg:#6d3fa0;
+  --font-head:'Archivo',system-ui,sans-serif; --font-body:'Source Sans 3',system-ui,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --paper:#171a17; --paper-2:#20241f; --ink:#e9e6dd; --ink-soft:#a3a99c; --line:#39402f;
+    --ok-bg:#1c3320; --warn-bg:#3a2a10; --bad-bg:#3a1d19; }
+}
+:root[data-theme="dark"]{ --paper:#171a17; --paper-2:#20241f; --ink:#e9e6dd; --ink-soft:#a3a99c; --line:#39402f;
+  --ok-bg:#1c3320; --warn-bg:#3a2a10; --bad-bg:#3a1d19; }
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);line-height:1.4}
+header.top{background:var(--navy);color:#f4f2ec;padding:22px 20px 18px;position:sticky;top:0;z-index:5;
+  padding-top:calc(22px + env(safe-area-inset-top,0px))}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header.top .wrap{padding:0 4px}
+.eyebrow{font-family:var(--font-head);font-weight:700;font-size:12px;letter-spacing:.04em;color:#9db3c4;margin:0 0 4px}
+h1{font-family:var(--font-head);font-weight:800;font-size:clamp(22px,3.2vw,30px);margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:#b7c3cd;font-size:14px;margin:0}
+
+.nav-bar{background:var(--navy-2);padding:0 20px}
+.nav-wrap{max-width:1180px;margin:0 auto;display:flex;gap:2px;overflow-x:auto}
+.nav-btn{background:transparent;border:none;color:#c9d5de;font-family:var(--font-body);font-weight:600;font-size:13.5px;
+  padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.nav-btn:hover{color:#fff}
+.nav-btn.active{color:#fff;border-color:#fff}
+.nav-btn.psc{box-shadow:inset 0 3px 0 #4fbf82}
+.nav-btn.stg{box-shadow:inset 0 3px 0 #b48ae6}
+.nav-btn.psc.active{border-color:#4fbf82}
+.nav-btn.stg.active{border-color:#b48ae6}
+
+.controls{background:var(--paper-2);border-bottom:1px solid var(--line);padding:16px 20px}
+.ctrl-grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media (max-width:820px){.ctrl-grid{grid-template-columns:1fr 1fr}}
+.field label{display:block;font-size:11.5px;font-weight:600;color:var(--ink-soft);margin-bottom:4px}
+.field input,.field select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;
+  background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:14.5px}
+.field select{font-weight:600}
+.field .type-toggle{display:flex;gap:16px;padding:8px 0}
+.field .type-toggle label{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink);margin:0;cursor:pointer}
+.field .type-toggle input{width:auto;padding:0;margin:0}
+
+.summary{max-width:1180px;margin:16px auto 0;padding:0 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--paper-2)}
+.chip.ok{color:var(--ok);background:var(--ok-bg);border-color:transparent}
+.chip.warn{color:var(--warn);background:var(--warn-bg);border-color:transparent}
+.chip.bad{color:var(--bad);background:var(--bad-bg);border-color:transparent}
+.chip.muted{color:var(--ink-soft)}
+
+main{max-width:1180px;margin:16px auto 60px;padding:0 20px;display:block}
+
+.qr-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+@media (max-width:700px){.qr-grid{grid-template-columns:1fr}}
+.qr-card{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.qr-card .recap-title{margin:0;border-radius:0}
+.qr-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.qr-box{width:216px;height:216px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:8px}
+.qr-link{font-size:11px;color:var(--ink-soft);word-break:break-all;text-align:center;margin:0}
+button.qr-copy{font-family:var(--font-body);font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+.qr-base label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:4px}
+.qr-base input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper-2);color:var(--ink);font-size:13.5px}
+.cam-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.cam-box{background:var(--paper-2);border-radius:12px;padding:14px;max-width:560px;width:100%}
+.cam-box video{width:100%;border-radius:8px;background:#000;max-height:60vh}
+.cam-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.cam-msg{font-size:13px;color:var(--warn);margin:8px 0 0}
+.banner{background:var(--warn-bg);color:var(--warn);font-weight:600;font-size:13px;padding:10px 20px;text-align:center}
+.import-box{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13.5px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+body.ro .controls input,body.ro .controls select,body.ro #main .item button,body.ro #main .item input{pointer-events:none;opacity:.6}
+.recap-note{color:var(--ink-soft);font-size:13px;margin:0 0 14px}
+.recap-block{margin-bottom:26px}
+.recap-title{font-family:var(--font-head);font-size:15px;margin:0 0 10px;padding:9px 14px;border-radius:8px;color:#fff}
+.recap-title.psc{background:var(--psc)}
+.recap-title.stg{background:var(--stg)}
+.recap-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--paper-2)}
+.recap-table{border-collapse:collapse;font-size:11.5px}
+.recap-table th,.recap-table td{padding:5px 8px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+  text-align:center;white-space:nowrap}
+.recap-table thead th{background:var(--paper);font-weight:700;color:var(--ink-soft);position:sticky;top:0;z-index:1}
+.recap-table .rc-name{text-align:left;white-space:normal;min-width:170px;max-width:260px;position:sticky;left:0;
+  background:var(--paper-2);font-weight:500;z-index:1}
+.recap-table thead .rc-name{background:var(--paper);z-index:3}
+.recap-table .rc-ref{color:var(--ink-soft)}
+.recap-table .rc-total{font-weight:700}
+.recap-table td.rc-ok{background:var(--ok-bg)}
+.recap-table td.rc-warn{background:var(--warn-bg)}
+.recap-table td.rc-bad{background:var(--bad-bg)}
+.rc-valid{color:var(--ok);font-weight:700}
+.recap-title.neutral{background:var(--navy)}
+.suivi-table th,.suivi-table td{text-align:left;white-space:normal}
+.suivi-table th:last-child,.suivi-table td:last-child{text-align:center;white-space:nowrap}
+button.archive-btn{font-family:var(--font-body);font-size:12px;font-weight:600;padding:5px 11px;border-radius:6px;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button.archive-btn:hover{border-color:var(--ink-soft)}
+button.archive-btn.danger{color:var(--bad);border-color:var(--bad-bg)}
+button.archive-btn.danger:hover{background:var(--bad-bg);border-color:var(--bad)}
+
+.lot{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lot-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lot-head h2{font-family:var(--font-head);font-size:16.5px;margin:0;letter-spacing:.01em}
+.lot-head .count{font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+.lot-head.psc,.lot-head.stg{color:#fff;border-color:transparent}
+.lot-head.psc{background:var(--psc)}
+.lot-head.stg{background:var(--stg)}
+.lot-head.psc .count,.lot-head.stg .count{color:rgba(255,255,255,.85)}
+.lot-head-right{display:flex;align-items:center;gap:10px}
+.toggle-btn{flex-shrink:0;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.45);color:#fff;
+  font-family:var(--font-body);font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.toggle-btn:hover{background:rgba(255,255,255,.3)}
+.lot-body.hidden{display:none}
+.section-title{padding:9px 16px;font-size:12px;font-weight:700;color:var(--ink-soft);background:var(--paper);
+  border-bottom:1px solid var(--line)}
+.item{padding:11px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:7px}
+.item:last-child{border-bottom:none}
+.item-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.item-name{font-size:14.5px;font-weight:500}
+.item-qty{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;flex-shrink:0}
+.status-row{display:flex;gap:6px}
+.status-btn{flex:1;padding:6px 4px;border-radius:6px;border:1px solid var(--line);background:var(--paper);
+  font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;text-align:center;transition:background .12s,border-color .12s}
+.status-btn:hover{border-color:var(--ink-soft)}
+.status-btn[data-code="P"]{color:#1e8e3e;border-color:#7fc08f}
+.status-btn[data-code="M"]{color:#b45309;border-color:#f0b35a}
+.status-btn[data-code="H"]{color:#c62828;border-color:#e58a8a}
+.status-btn.sel-ok{background:#1e8e3e;color:#fff;border-color:#1e8e3e;font-weight:700;box-shadow:0 1px 4px rgba(30,142,62,.45)}
+.status-btn.sel-warn{background:#f59e0b;color:#231600;border-color:#f59e0b;font-weight:700;box-shadow:0 1px 4px rgba(245,158,11,.5)}
+.status-btn.sel-bad{background:#d32f2f;color:#fff;border-color:#d32f2f;font-weight:700;box-shadow:0 1px 4px rgba(211,47,47,.45)}
+.sec-toggle{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.section-title .toggle-btn{background:var(--paper-2);color:var(--ink);border:1px solid var(--line)}
+.section-title .toggle-btn:hover{border-color:var(--ink-soft)}
+.sec-body.hidden{display:none}
+.mann-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mann-row input{padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--paper);
+  color:var(--ink);font-family:var(--font-body);font-size:13px}
+.sub-row{display:flex;gap:6px;align-items:center}
+.qty-input{width:120px;flex-shrink:0}
+.qty-input[readonly]{background:transparent;color:var(--ink-soft);cursor:not-allowed}
+.sub-row .comment{flex:1}
+.comment{width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--paper);
+  color:var(--ink);font-family:var(--font-body);font-size:13px}
+.comment::placeholder,.qty-input::placeholder{color:var(--ink-soft)}
+.photo-btn{flex-shrink:0;width:34px;height:34px;border:1px solid var(--line);border-radius:6px;background:var(--paper);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px}
+.photo-btn:hover{border-color:var(--ink-soft)}
+.photo-wrap{display:flex;align-items:center;gap:10px}
+.photo-thumb{width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.photo-remove{font-size:11.5px;color:var(--bad);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0}
+
+.bottombar{position:sticky;bottom:0;background:var(--paper-2);border-top:1px solid var(--line);
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;
+  align-items:center;gap:12px;flex-wrap:wrap}
+.bb-wrap{max-width:1180px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.save-note{font-size:12.5px;color:var(--ink-soft)}
+.warn-note{font-size:12.5px;color:var(--warn);font-weight:600}
+button.action:disabled{opacity:.5;cursor:not-allowed}
+button.action:disabled:hover{border-color:var(--line)}
+.btns{display:flex;gap:8px}
+button.action{font-family:var(--font-body);font-weight:600;font-size:13.5px;padding:9px 16px;border-radius:6px;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+button.action:hover{border-color:var(--ink-soft)}
+button.action.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.action.validated{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+
+@media print{
+  header.top,.controls,.bottombar,.nav-bar{position:static}
+  .status-btn,.toggle-btn,.photo-btn{display:none}
+  .cam-modal{display:none!important}
+  .status-row::after{content:attr(data-print);font-weight:700;font-size:13px}
+  .lot-body.hidden,.sec-body.hidden{display:block}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <p class="eyebrow">RGHF — SUIVI DES MOYENS PÉDAGOGIQUES</p>
+  <h1>Registre d'inventaire — Lots PSC &amp; STG</h1>
+  <p class="sub">Vérification du contenu des lots de formation, site par site</p>
+</div></header>
+
+<div class="nav-bar"><div class="nav-wrap">
+  <button class="nav-btn psc" id="navPSC" type="button">Inventaire PSC</button>
+  <button class="nav-btn stg" id="navSTG" type="button">Inventaire Sauvetage (STG)</button>
+  <button class="nav-btn" id="navRecap" type="button">Récapitulatifs</button>
+  <button class="nav-btn" id="navSuivi" type="button">Suivi des inventaires</button>
+  <button class="nav-btn" id="navQR" type="button">QR codes</button>
+</div></div>
+
+<div class="banner" id="banner" style="display:none"></div>
+<div class="controls"><div class="ctrl-grid">
+  <div class="field"><label for="site">Site</label>
+    <select id="site"></select>
+  </div>
+  <div class="field"><label for="formateur">Nom, prénom du formateur</label>
+    <input id="formateur" type="text" placeholder="—"></div>
+  <div class="field"><label for="date">Date de l'inventaire</label>
+    <input id="date" type="date"></div>
+  <div class="field"><label for="pretea">Prêté à</label>
+    <input id="pretea" type="text" placeholder="—"></div>
+  <div class="field"><label>Type d'inventaire</label>
+    <div class="type-toggle">
+      <label><input type="radio" name="invtype" id="typeAnnuel" value="annuel"> Annuel</label>
+      <label><input type="radio" name="invtype" id="typeFormation" value="formation"> Formation</label>
+    </div></div>
+</div></div>
+
+<div class="summary" id="summary"></div>
+
+<main id="main"></main>
+
+<div class="bottombar"><div class="bb-wrap">
+  <span class="save-note" id="saveNote">Enregistrement automatique sur cet appareil</span>
+  <span class="warn-note" id="validateWarn" style="display:none">⚠ Complétez entièrement le lot PSC ou le lot STG avant de valider l'inventaire.</span>
+  <div class="btns">
+    <button class="action" id="validateBtn">Validation de l'inventaire</button>
+    <button class="action primary" id="printBtn">Imprimer / PDF</button>
+  </div>
+</div></div>
+
+<div class="cam-modal" id="camModal"><div class="cam-box">
+  <video id="camVideo" autoplay playsinline muted></video>
+  <p class="cam-msg" id="camMsg"></p>
+  <div class="cam-actions">
+    <button class="action primary" id="camSnap" type="button">Prendre la photo</button>
+    <button class="action" id="camFile" type="button">Appareil photo / fichier</button>
+    <button class="action" id="camCancel" type="button">Annuler</button>
+  </div>
+</div></div>
+<input type="file" id="fallbackFile" accept="image/*" capture="environment" hidden>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-shim.js"></script>
+<script>
+const SITES=['01-Amiens','02 - Beauvais','03 - Chauny','04 - Merlimont.Liic','05 - Clermont','06 – D2R.CRID Hirson','07 – Saint Omer','08 – Chateau Thierry','09 – Soissons','10 – EDCF 80','11 - Compiegne','12 – EDCF 02','13 – Peronne','14 – Senlis','15 – Abbeville','16 – Méru','17 – Saint Quentin','18 – CRID Hirson','19 – Arras','20 – Dunkerque','21 – Douai','22 – Avesnes Sur Helpe','23 – GM.VDA','24 - Calais','25 – St Pol Sur Mer','26 – VDA.Volant','27 – VDA SST','28 – GM Chauny','29 – GM Valenciennes','30 – Amiens'];
+const ITEMS=[
+['Recommandations','1','P','O'],
+['RIF/RIC','1','P','O'],
+['Moyen de projection et audio','1','P','O'],
+['Matériel de pansement compressif improvisé','EQS','P','O'],
+['Matériel de garrot improvisé','EQS','P','O'],
+['Garrot de fabrication industrielle','1','P','O'],
+['Matériel de simulation','EQS','P','O'],
+['Tableau (papier, blanc,etc)','1','P','O'],
+['MANNEQUIN DE RCP ADULTE ( marque, numéro)','1','P','O'],
+['Bras pour mannequin adulte (*2)','1','P','O'],
+['jambes pour mannequin adulte (*2)','1','P','O'],
+['MANNEQUIN DE RCP ENFANT ( marque, numéro)(poumons avec filtre □  / poumon sachet  □ )','1','P','O'],
+['MANNEQUIN RCP NOURRISSON ( marque, numéro)','1','P','O'],
+['DAE de formation et ses accessoires (Marque, type et nombre de piles pour la télécommande et pour le DAE)','1','P','O'],
+['électrodes adultes','1','P','O'],
+['électrodes pédiatriques','1','P','O'],
+['Coupe de tête','1','P','O'],
+['matériels d’entretien et consommables des mannequins','','P','O'],
+['Peaux de visage adulte','11','P','O'],
+['Peaux de visage enfant','11','P','O'],
+['Peaux de visage Nourrisson','11','P','O'],
+['Poumons adulte','11 / session','P','O'],
+['Poumons enfant','11 / session','P','O'],
+['Poumons Nourrisson','11 / session','P','O'],
+['Mallette 5 plaies filet','EQS','P','O'],
+['Lot membre arraché ( 2 sacs congélation, glaçons fictifs, membre sectionné)','1 / session','P','O'],
+['mannequin d’apprentissage des compressions abdominales adulte','Facultatif','P','F'],
+['mannequin d’apprentissage des techniques de désobstruction des voies aériennes nourrisson','Facultatif','P','F'],
+['Veste de simulation d’obstruction des voies aériennes','Facultatif','P','F'],
+['Tapis de sol','Facultatif','P','F'],
+['Métronome','Facultatif','P','F'],
+['Pictogramme et supports','Facultatif','P','F'],
+['tout aide pédagogique multimédia','Facultatif','P','F'],
+['Film alimentaire','Facultatif','P','F'],
+['Pack de froid instantané','Facultatif','P','F'],
+['Moyen de projection et audio','1','S','O'],
+['Tableau (papier, blanc,etc)','1','S','O'],
+['RIF/RIC SauveTaGe N1','1','S','O'],
+['Maquillage pour simulations ou plaies artificielles','EQS','S','O'],
+['Coupe de tête','1','S','O'],
+['Fiche individuelle de certification','EQS','S','O'],
+['Fiche d’évaluation de la formation','EQS','S','O'],
+['Mannequin adulte','1','S','O'],
+['Trousse de secours vide','11','S','O'],
+['Garrot CAT','1','S','O'],
+['Garrot SOFTT','11','S','O'],
+['Pansement compressif d’urgence','11','S','O'],
+['Pansement Imbibé de Substance Hémostatique d’instruction','6','S','O'],
+['Gilet pare-balle d’exercice','EQS','S','O'],
+['Couverture de survie','EQS','S','O'],
+['FMPI (FMA pour prépa OPEX)','EQS','S','O'],
+['Nécessaire pour garrot de fortune','1','S','O'],
+['Nécessaire pour immobilisation de fortune','1','S','O'],
+['Alèse portoir','2','S','O'],
+['Arme de simulation (red gun…)','EQS','S','O'],
+['S-cut','1','S','O'],
+['Marqueur dermographe','11','S','O'],
+['Sachet de compresses avec 1 côté plastifié transparent','EQS','S','O'],
+['Adhésif médical 5cm de largeur','EQS','S','O'],
+['Ciseaux type Gesco','EQS','S','O'],
+['Rouleau Sac DASRI 20 litres minimum','EQS','S','O'],
+['Casque d’intervention','1 pour 2 apprenants','S','O'],
+['Casque motocycliste','1 pour 2 apprenants','S','O'],
+['Syrette de morphine','EQS ou vidéo','S','O'],
+['Gants à usage unique','EQS','S','O'],
+['X-TRACT OU FOXTROT LITTER','Facultatif','S','F'],
+['Brancard filet','Facultatif','S','F'],
+['Mannequin lesté','Facultatif','S','F']
+]; // [designation, quantité, lot('P'|'S'), section('O'|'F')]
+
+const LOCAL_KEY='psc_stg_inventaire_v1';
+let siteIdx=0;
+let collapsed={P:false,S:false};
+const collapsedSec={};
+let viewMode='form'; // 'form' | 'recap' | 'suivi' | 'qr'
+let activeLot='P'; // 'P' | 'S'
+
+/* ---------- état partagé (stockage db) ---------- */
+let DB=null, dbChecked=false, dbFailed=false, canWrite=true, synced=false, gotRecords=false, gotArchives=false;
+const store={records:{},archives:[]};
+const recordExists={}, lastSnap={}, pend={}, photoCache={}, photoLoading={};
+
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function mergeInto(t,p){
+  Object.keys(p).forEach(k=>{
+    const v=p[k];
+    if(v&&typeof v==='object'&&!Array.isArray(v)){ if(!t[k]||typeof t[k]!=='object') t[k]={}; mergeInto(t[k],v); }
+    else t[k]=v;
+  });
+  return t;
+}
+function canWriteNow(){ return !!DB && canWrite && synced; }
+function setSync(msg){ const n=document.getElementById('saveNote'); if(n) n.textContent=msg; }
+function setBanner(msg){ const b=document.getElementById('banner'); if(!b) return; b.textContent=msg||''; b.style.display=msg?'':'none'; }
+function updateBanner(){
+  if(dbFailed||(dbChecked&&!DB)) setBanner("Stockage partagé indisponible : vérifiez la connexion Internet et la configuration Firebase. Aucune donnée ne peut être enregistrée.");
+  else if(DB&&!canWrite) setBanner("Accès en lecture seule : connectez-vous avec un compte autorisé pour saisir des inventaires.");
+  else setBanner('');
+}
+function emptyRecord(){ return {formateur:'',date:'',pretea:'',type:'annuel',items:{}}; }
+function recKey(i,l){ return i+'_'+(l||activeLot); }
+function getSiteData(i){
+  const k=recKey(i);
+  if(!store.records[k]) store.records[k]=emptyRecord();
+  const r=store.records[k];
+  if(!r.items) r.items={};
+  if(!r.type) r.type='annuel';
+  return r;
+}
+
+let renderPending=false;
+function scheduleRender(){
+  const a=document.activeElement;
+  if(a && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT')){ renderPending=true; return; }
+  renderAll();
+}
+if(document.addEventListener) document.addEventListener('focusout',()=>{
+  if(renderPending){ renderPending=false; setTimeout(renderAll,60); }
+});
+
+function fail(e){
+  setSync("⚠ Échec de l'enregistrement ("+((e&&e.code)||'erreur')+")");
+  if(e&&(e.code==='invalid_argument'||e.code==='permission-denied')){ canWrite=false; updateBanner(); renderAll(); }
+}
+function queueWrite(id,patch,immediate){
+  if(!canWriteNow()) return;
+  const p=pend[id]||(pend[id]={patch:{},timer:null,busy:false});
+  mergeInto(p.patch,patch);
+  clearTimeout(p.timer);
+  p.timer=setTimeout(()=>flush(id),immediate?0:600);
+  setSync('Enregistrement…');
+}
+async function flush(id){
+  const p=pend[id]; if(!p) return;
+  if(p.busy){ p.timer=setTimeout(()=>flush(id),300); return; }
+  const patch=p.patch; p.patch={}; p.busy=true;
+  const ref=DB.doc('records/'+id);
+  let ok=false;
+  try{
+    if(recordExists[id]) await ref.update(patch); else await ref.set(clone(store.records[id]));
+    recordExists[id]=true; ok=true;
+  }catch(e){
+    if(recordExists[id]){
+      try{ recordExists[id]=false; await ref.set(clone(store.records[id])); recordExists[id]=true; ok=true; }catch(e2){ fail(e2); }
+    } else fail(e);
+  }
+  p.busy=false;
+  if(Object.keys(p.patch).length){ p.timer=setTimeout(()=>flush(id),0); return; }
+  delete pend[id];
+  if(ok){
+    setSync('Enregistré dans le stockage partagé ✓');
+    try{ const snap=await ref.get(); if(!pend[id]){ lastSnap[id]=snap.exists?snap.data():null; store.records[id]=snap.exists?clone(snap.data()):emptyRecord(); scheduleRender(); } }catch(e){}
+  }
+}
+function patchRecord(patch,immediate){
+  mergeInto(getSiteData(siteIdx),patch);
+  queueWrite(recKey(siteIdx),patch,immediate);
+}
+
+function onRecords(snap){
+  snap.docs.forEach(d=>{
+    const data=d.exists?d.data():null;
+    lastSnap[d.id]=data; recordExists[d.id]=!!data;
+    if(!pend[d.id]) store.records[d.id]=data?clone(data):emptyRecord();
+  });
+  gotRecords=true; checkSynced(); scheduleRender();
+}
+function onArchives(snap){
+  store.archives=snap.docs.filter(d=>d.exists).map(d=>Object.assign({},clone(d.data()),{id:d.id}));
+  gotArchives=true; checkSynced(); scheduleRender();
+}
+function checkSynced(){
+  if(gotRecords&&gotArchives&&!synced){ synced=true; setSync('Stockage partagé synchronisé'); }
+  updateBanner();
+}
+function onDbErr(e){ dbFailed=true; updateBanner(); renderAll(); }
+async function initDb(){
+  try{ if(window.claude&&window.claude.use) DB=await window.claude.use('db'); }catch(e){ DB=null; }
+  dbChecked=true;
+  if(!DB){ updateBanner(); renderAll(); return; }
+  try{
+    const u=await window.claude.use('user');
+    if(u&&u.can){ const c=await u.can('data.write'); if(c===false) canWrite=false; }
+  }catch(e){}
+  updateBanner();
+  DB.collection('records').onSnapshot(onRecords,onDbErr);
+  DB.collection('archives').onSnapshot(onArchives,onDbErr);
+}
+
+/* ---------- liens / QR ---------- */
+function baseUrl(){
+  let saved=''; try{ saved=localStorage.getItem('psc_stg_qrbase')||''; }catch(e){}
+  if(saved) return saved;
+  try{ const u=new URL(window.location.href); u.search=''; u.hash=''; return u.toString(); }catch(e){ return ''; }
+}
+function lotLink(l){
+  try{ const u=new URL(baseUrl()); u.searchParams.set('lot',l); return u.toString(); }catch(e){ return baseUrl(); }
+}
+function setLot(l){ activeLot=l; try{ localStorage.setItem('psc_stg_lastlot',l); }catch(e){} }
+function applyUrlParams(){
+  try{
+    const l=new URLSearchParams(window.location.search).get('lot');
+    if(l==='P'||l==='S'){ activeLot=l; viewMode='form'; return; }
+    const last=localStorage.getItem('psc_stg_lastlot');
+    if(last==='P'||last==='S') activeLot=last;
+  }catch(e){}
+}
+function qrCard(l,title,cls){
+  return `<div class="qr-card"><h3 class="recap-title ${cls}">${title}</h3><div class="qr-body"><div id="qrbox${l}" class="qr-box"></div><p class="qr-link">${esc(lotLink(l))}</p><button class="qr-copy" data-copy="${l}" type="button">Copier le lien</button></div></div>`;
+}
+function renderQrPage(){
+  let saved=''; try{ saved=localStorage.getItem('psc_stg_qrbase')||''; }catch(e){}
+  document.getElementById('main').innerHTML=`<p class="recap-note">Scannez le QR code avec un téléphone ou une tablette pour ouvrir directement l'inventaire du lot. Les saisies, photos et archives sont enregistrées dans le stockage partagé : tous les appareils voient les mêmes données. La personne qui scanne doit se connecter avec son compte (e-mail et mot de passe).</p>
+    <div class="qr-grid">${qrCard('P','Inventaire Lot PSC','psc')}${qrCard('S','Inventaire Lot Sauvetage (STG)','stg')}</div>
+    <div class="qr-base"><label for="qrBase">Adresse de la page partagée (à renseigner si le QR code n'ouvre pas la bonne page)</label><input id="qrBase" type="text" value="${esc(saved)}" placeholder="https://votre-projet.web.app/"></div>`;
+  ['P','S'].forEach(l=>{
+    const box=document.getElementById('qrbox'+l);
+    if(typeof QRCode!=='undefined'){ new QRCode(box,{text:lotLink(l),width:200,height:200,correctLevel:QRCode.CorrectLevel.M}); }
+    else { box.textContent='QR indisponible hors-ligne'; }
+  });
+}
+
+/* ---------- photos / caméra ---------- */
+let camStream=null, camIdx=null;
+function newPhotoId(){ return 'p'+Date.now()+'_'+Math.random().toString(36).slice(2,7); }
+function shrinkCanvas(canvas){
+  let q=0.62, out=canvas.toDataURL('image/jpeg',q);
+  while(out.length>230000 && q>0.3){ q-=0.08; out=canvas.toDataURL('image/jpeg',q); }
+  if(out.length>230000){
+    const c2=document.createElement('canvas'); c2.width=Math.round(canvas.width*0.7); c2.height=Math.round(canvas.height*0.7);
+    c2.getContext('2d').drawImage(canvas,0,0,c2.width,c2.height); out=c2.toDataURL('image/jpeg',0.5);
+  }
+  return out;
+}
+async function savePhoto(idx,url){
+  if(!canWriteNow()){ alert("Enregistrement impossible : stockage partagé indisponible ou accès en lecture seule."); return; }
+  const id=newPhotoId(); photoCache[id]=url;
+  try{ await DB.doc('photos/'+id).set({data:url}); }
+  catch(e){ alert("Photo non enregistrée ("+((e&&e.code)||'erreur')+")."); return; }
+  const old=(getSiteData(siteIdx).items[idx]||{}).photo;
+  patchRecord({items:{[idx]:{photo:id}}},true);
+  if(old) DB.doc('photos/'+old).delete().catch(()=>{});
+  renderMain();
+}
+function hydratePhotos(){
+  if(!DB||!document.querySelectorAll) return;
+  document.querySelectorAll('img[data-photo-id]').forEach(img=>{
+    const id=img.dataset.photoId;
+    if(photoCache[id]){ img.src=photoCache[id]; return; }
+    if(photoLoading[id]) return;
+    photoLoading[id]=true;
+    DB.doc('photos/'+id).get().then(s=>{
+      if(s.exists) photoCache[id]=s.data().data;
+      document.querySelectorAll('img[data-photo-id="'+id+'"]').forEach(i=>{ if(photoCache[id]) i.src=photoCache[id]; });
+    }).catch(()=>{ photoLoading[id]=false; });
+  });
+}
+function closeCam(){
+  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
+  document.getElementById('camVideo').srcObject=null;
+  document.getElementById('camModal').style.display='none';
+}
+function camFail(){
+  document.getElementById('camMsg').textContent="Caméra non accessible depuis cette page (autorisation refusée ou indisponible). Utilisez « Appareil photo / fichier » pour prendre ou choisir une photo.";
+  document.getElementById('camSnap').style.display='none';
+  document.getElementById('camVideo').style.display='none';
+}
+async function openCamera(idx){
+  camIdx=idx;
+  document.getElementById('camMsg').textContent='';
+  document.getElementById('camSnap').style.display='';
+  document.getElementById('camVideo').style.display='';
+  document.getElementById('camModal').style.display='flex';
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ camFail(); return; }
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+    const v=document.getElementById('camVideo'); v.srcObject=camStream;
+    try{ await v.play(); }catch(e){}
+  }catch(e){ camFail(); }
+}
+
+/* ---------- utilitaires ---------- */
+function esc(v){ return (v===undefined||v===null?'':String(v)).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function shortSite(s){ return s.replace(/^\d+\s*[-–]\s*/,''); }
+function isEmptyVal(v){ return v===undefined||v===null||v===''; }
+function normItems(it){
+  Object.keys(it).forEach(k=>{ const r=it[k]; const ref=(ITEMS[k]&&ITEMS[k][1])||''; if(r.status==='P'||isEmptyVal(r.qty)) r.qty=ref; });
+  return it;
+}
+function splitItems(items,lot){
+  const out={};
+  Object.keys(items||{}).forEach(k=>{ if(ITEMS[k]&&ITEMS[k][2]===lot) out[k]=items[k]; });
+  return out;
+}
+function lotComplete(d,lotCode){
+  return ITEMS.every((it,i)=> it[2]!==lotCode || (d.items[i] && d.items[i].status));
+}
+function isMannequin(name){
+  return /mannequin/i.test(name) && !/pour mannequin/i.test(name) && !/consommables des mannequins/i.test(name);
+}
+function compressPhoto(file,cb){
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const scale=Math.min(1,800/img.width);
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.round(img.width*scale); canvas.height=Math.round(img.height*scale);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      cb(shrinkCanvas(canvas));
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function latestArchive(siteIdx0,type,lot){
+  let found=null;
+  (store.archives||[]).forEach(a=>{
+    if(a.site===siteIdx0 && a.type===type && a.lot===lot){ if(!found||(a.ts||0)>(found.ts||0)) found=a; }
+  });
+  return found;
+}
+
+/* ---------- import des anciennes données locales ---------- */
+function migrateLegacy(st){
+  Object.keys(st).forEach(k=>{
+    if(k==='archives') return;
+    let v=st[k];
+    if(!v || (v.P && v.S)) return;
+    if(v.items && !v.annuel && !v.formation && !v.annuel_P){ v={annuel:v}; }
+    ['annuel','formation'].forEach(t=>{
+      if(v[t]){ ['P','S'].forEach(l=>{ v[t+'_'+l]={formateur:v[t].formateur||'',date:v[t].date||'',pretea:v[t].pretea||'',items:splitItems(v[t].items,l)}; }); delete v[t]; }
+    });
+    const nv={};
+    ['P','S'].forEach(l=>{
+      const a=v['annuel_'+l]||emptyRecord(), f=v['formation_'+l]||emptyRecord();
+      const na=Object.keys(a.items||{}).length, nf=Object.keys(f.items||{}).length;
+      const useF=nf>na;
+      const src=useF?f:a;
+      nv[l]={formateur:src.formateur||'',date:src.date||'',pretea:src.pretea||'',type:useF?'formation':'annuel',items:src.items||{}};
+    });
+    st[k]=nv;
+  });
+  const arch=[];
+  (st.archives||[]).forEach(a=>{
+    if(a.lot){ arch.push(a); return; }
+    ['P','S'].forEach(l=>{ arch.push(Object.assign({},a,{id:a.id+'_'+l,lot:l,items:splitItems(a.items,l)})); });
+  });
+  st.archives=arch;
+  return st;
+}
+function legacyData(){
+  try{
+    if(localStorage.getItem('psc_stg_imported')) return null;
+    const raw=localStorage.getItem(LOCAL_KEY); if(!raw) return null;
+    const st=migrateLegacy(JSON.parse(raw));
+    let nRec=0;
+    Object.keys(st).forEach(k=>{ if(/^s\d+$/.test(k)) ['P','S'].forEach(l=>{ const r=st[k][l]; if(r&&Object.keys(r.items||{}).length) nRec++; }); });
+    const nArch=(st.archives||[]).length;
+    if(!nArch&&!nRec) return null;
+    return {st,nArch,nRec};
+  }catch(e){ return null; }
+}
+async function importLegacy(){
+  const L=legacyData(); if(!L||!canWriteNow()) return;
+  const conv=async v=>{ if(typeof v==='string'&&v.indexOf('data:')===0){ const id=newPhotoId(); await DB.doc('photos/'+id).set({data:v}); return id; } return v||null; };
+  try{
+    for(const a of L.st.archives){
+      const items=clone(a.items||{});
+      for(const k of Object.keys(items)){ if(items[k].photo) items[k].photo=await conv(items[k].photo); }
+      await DB.collection('archives').doc(a.id).set(Object.assign({},a,{items}));
+    }
+    for(const k of Object.keys(L.st)){
+      const m=/^s(\d+)$/.exec(k); if(!m) continue;
+      for(const l of ['P','S']){
+        const r=L.st[k][l]; if(!r||!Object.keys(r.items||{}).length) continue;
+        const id=m[1]+'_'+l;
+        if(store.records[id]&&Object.keys(store.records[id].items||{}).length) continue;
+        const rec=clone(r);
+        for(const ik of Object.keys(rec.items)){ if(rec.items[ik].photo) rec.items[ik].photo=await conv(rec.items[ik].photo); }
+        await DB.doc('records/'+id).set(rec); store.records[id]=rec; recordExists[id]=true;
+      }
+    }
+    try{ localStorage.setItem('psc_stg_imported','1'); }catch(e){}
+  }catch(e){ alert("Import interrompu ("+((e&&e.code)||'erreur')+")."); }
+  renderAll();
+}
+
+/* ---------- rendu ---------- */
+function renderControls(){
+  const sel=document.getElementById('site');
+  sel.innerHTML=SITES.map((s,i)=>`<option value="${i}">${s}</option>`).join('');
+  sel.value=siteIdx;
+  const d=getSiteData(siteIdx);
+  document.getElementById('formateur').value=d.formateur||'';
+  document.getElementById('date').value=d.date||'';
+  document.getElementById('pretea').value=d.pretea||'';
+  document.getElementById('typeAnnuel').checked=(d.type!=='formation');
+  document.getElementById('typeFormation').checked=(d.type==='formation');
+}
+
+const STATUSES=[['P','Présent','sel-ok'],['M','Manquant','sel-warn'],['H','HS','sel-bad']];
+const PH='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+function itemRow(item,idx){
+  const [name,qtyRef,lot,section]=item;
+  const d=getSiteData(siteIdx);
+  const rec=d.items[idx]||{};
+  const btns=STATUSES.map(([code,label,cls])=>
+    `<button class="status-btn ${rec.status===code?cls:''}" data-idx="${idx}" data-code="${code}">${label}</button>`
+  ).join('');
+  const mannHtml=isMannequin(name)?`<div class="mann-row">
+      <input class="field-input" data-idx="${idx}" data-field="marque" type="text" placeholder="Marque du mannequin" value="${esc(rec.marque)}">
+      <input class="field-input" data-idx="${idx}" data-field="numero" type="text" placeholder="Numéro du mannequin" value="${esc(rec.numero)}">
+    </div>`:'';
+  const photoHtml=rec.photo?`<div class="photo-wrap"><img src="${photoCache[rec.photo]||PH}" data-photo-id="${esc(rec.photo)}" class="photo-thumb" alt=""><button class="photo-remove" type="button" data-idx="${idx}">Retirer la photo</button></div>`:'';
+  const qty=isEmptyVal(rec.qty)?(qtyRef||''):rec.qty;
+  return `<div class="item">
+    <div class="item-top"><span class="item-name">${name}</span>${qtyRef?`<span class="item-qty">Réf. ${qtyRef}</span>`:''}</div>
+    <div class="status-row" data-print="${rec.status?({P:'Présent',M:'Manquant',H:'HS'}[rec.status]):'Non renseigné'}">${btns}</div>
+    ${mannHtml}
+    <div class="sub-row">
+      <input class="field-input qty-input" data-idx="${idx}" data-field="qty" type="text" inputmode="numeric" placeholder="Qté présente" value="${esc(qty)}"${(rec.status==='M'||rec.status==='H')?'':' readonly title="Modifiable si Manquant ou HS"'}>
+      <input class="field-input comment" data-idx="${idx}" data-field="comment" type="text" placeholder="Commentaire…" value="${esc(rec.comment)}">
+      <button class="photo-btn" type="button" data-photo-idx="${idx}" title="Prendre une photo">📷</button>
+    </div>
+    ${photoHtml}
+  </div>`;
+}
+
+function secBlock(lot,sec,label,list){
+  const hid=collapsedSec[lot+'_'+sec];
+  return `<div class="section-title sec-toggle" data-sec="${sec}"><span>${hid?'▸':'▾'} ${label} (${list.length})</span><button class="toggle-btn" type="button">${hid?'Déplier':'Replier'}</button></div>
+    <div class="sec-body ${hid?'hidden':''}">${list.map(x=>itemRow(x.it,x.i)).join('')}</div>`;
+}
+function lotBlock(lotCode,title,cls){
+  const items=ITEMS.map((it,i)=>({it,i})).filter(x=>x.it[2]===lotCode);
+  const obl=items.filter(x=>x.it[3]==='O');
+  const fac=items.filter(x=>x.it[3]==='F');
+  const d=getSiteData(siteIdx);
+  let present=0,manquant=0,hs=0;
+  items.forEach(x=>{const r=d.items[x.i]; if(r&&r.status==='P')present++; if(r&&r.status==='M')manquant++; if(r&&r.status==='H')hs++;});
+  const isHidden=collapsed[lotCode];
+  return `<section class="lot">
+    <div class="lot-head ${cls}"><h2>${title}</h2>
+      <div class="lot-head-right">
+        <span class="count">${present}/${items.length} présents${manquant?` · ${manquant} manquant(s)`:''}${hs?` · ${hs} HS`:''}</span>
+      </div>
+    </div>
+    <div class="lot-body ${isHidden?'hidden':''}">
+      ${secBlock(lotCode,'O','Matériel obligatoire',obl)}
+      ${secBlock(lotCode,'F','Matériel facultatif',fac)}
+    </div>
+  </section>`;
+}
+
+function renderMain(){
+  const title=activeLot==='P'?'Lot PSC':'Lot STG (SauveTaGe)';
+  const cls=activeLot==='P'?'psc':'stg';
+  document.getElementById('main').innerHTML = `
+    ${lotBlock(activeLot,title,cls)}`;
+  hydratePhotos();
+}
+
+function renderSummary(){
+  const d=getSiteData(siteIdx);
+  let present=0,manquant=0,hs=0,none=0,total=0;
+  ITEMS.forEach((it,i)=>{ if(it[2]!==activeLot) return; total++; const r=d.items[i]; if(!r||!r.status)none++; else if(r.status==='P')present++; else if(r.status==='M')manquant++; else hs++;});
+  document.getElementById('summary').innerHTML =
+    `<span class="chip ok">${present} présents</span>`+
+    (manquant?`<span class="chip warn">${manquant} manquants</span>`:'')+
+    (hs?`<span class="chip bad">${hs} hors service</span>`:'')+
+    `<span class="chip muted">${none} non renseignés sur ${total}</span>`;
+}
+
+function recapTable(lotCode,title,cls){
+  const rows=ITEMS.map((it,i)=>({it,i})).filter(x=>x.it[2]===lotCode);
+  const headCells=SITES.map((s,i)=>{
+    const ok=!!latestArchive(i,'annuel',lotCode);
+    return `<th>${shortSite(s)}${ok?' <span class="rc-valid" title="Inventaire annuel archivé">✓</span>':''}</th>`;
+  }).join('');
+  const bodyRows=rows.map(x=>{
+    const [name,qtyRef]=x.it;
+    let total=0, hasNum=false;
+    const cells=SITES.map((s,i)=>{
+      const arch=latestArchive(i,'annuel',lotCode);
+      const rec=arch ? arch.items[x.i] : null;
+      let cellCls='';
+      if(rec&&rec.status==='M')cellCls='rc-warn'; else if(rec&&rec.status==='H')cellCls='rc-bad'; else if(rec&&rec.status==='P')cellCls='rc-ok';
+      const val=rec&&rec.qty?rec.qty:'';
+      const n=parseFloat(val);
+      if(!isNaN(n)){total+=n;hasNum=true;}
+      return `<td class="${cellCls}">${esc(val)}</td>`;
+    }).join('');
+    return `<tr><td class="rc-name">${name}</td><td class="rc-ref">${qtyRef||''}</td>${cells}<td class="rc-total">${hasNum?total:'–'}</td></tr>`;
+  }).join('');
+  return `<div class="recap-block">
+    <h3 class="recap-title ${cls}">${title}</h3>
+    <div class="recap-scroll"><table class="recap-table">
+      <thead><tr><th class="rc-name">Désignation</th><th class="rc-ref">Qté obl.</th>${headCells}<th class="rc-total">Total</th></tr></thead>
+      <tbody>${bodyRows}</tbody>
+    </table></div>
+  </div>`;
+}
+
+function isRcpMannequin(name){
+  return /rcp/i.test(name) && /(adulte|enfant|nourrisson)/i.test(name);
+}
+function recapMannequinTable(lotCode,title,cls){
+  const rows=ITEMS.map((it,i)=>({it,i})).filter(x=>x.it[2]===lotCode && isRcpMannequin(x.it[0]));
+  if(!rows.length) return '';
+  const headCells=SITES.map(s=>`<th>${shortSite(s)}</th>`).join('');
+  const bodyRows=rows.map(x=>{
+    const cells=SITES.map((s,i)=>{
+      const arch=latestArchive(i,'annuel',lotCode);
+      const rec=arch ? arch.items[x.i] : null;
+      const marque=rec&&rec.marque?rec.marque:'', numero=rec&&rec.numero?rec.numero:'';
+      const txt=(marque||numero)?`${esc(marque)||'–'} / ${esc(numero)||'–'}`:'–';
+      return `<td>${txt}</td>`;
+    }).join('');
+    return `<tr><td class="rc-name">${x.it[0]}</td>${cells}</tr>`;
+  }).join('');
+  return `<div class="recap-block">
+    <h3 class="recap-title ${cls}">${title}</h3>
+    <div class="recap-scroll"><table class="recap-table">
+      <thead><tr><th class="rc-name">Mannequin</th>${headCells}</tr></thead>
+      <tbody>${bodyRows}</tbody>
+    </table></div>
+  </div>`;
+}
+
+function renderRecap(){
+  document.getElementById('main').innerHTML =
+    `<p class="recap-note">Données issues du dernier inventaire annuel archivé de chaque site (cases colorées : jaune = manquant signalé, rouge = HS signalé ; ✓ = inventaire annuel archivé).</p>` +
+    recapTable('P','Récapitulatif — Lot PSC','psc') + recapTable('S','Récapitulatif — Lot STG','stg') +
+    recapMannequinTable('P','Mannequins — Lot PSC (marque / numéro)','psc') +
+    recapMannequinTable('S','Mannequins — Lot STG (marque / numéro)','stg');
+}
+
+function suiviTable(type,title){
+  const rows=(store.archives||[]).filter(a=>a.type===type).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  const body=rows.length?rows.map(a=>`<tr>
+      <td>${esc(a.siteName)}</td>
+      <td>${a.lot==='S'?'STG':'PSC'}</td>
+      <td>${esc(a.formateur)||'—'}</td>
+      <td>${esc(a.date)||'—'}</td>
+      <td>${esc(a.pretea)||'—'}</td>
+      <td><button class="archive-btn" data-id="${esc(a.id)}" type="button">Archive (PDF)</button></td>
+      <td><button class="archive-btn danger" data-del-id="${esc(a.id)}" type="button">Supprimer</button></td>
+    </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;color:var(--ink-soft)">Aucun inventaire ${type==='annuel'?'annuel':'formation'} validé pour le moment.</td></tr>`;
+  return `<div class="recap-block">
+    <h3 class="recap-title neutral">${title}</h3>
+    <div class="recap-scroll"><table class="recap-table suivi-table">
+      <thead><tr><th>Site</th><th>Lot</th><th>Nom, prénom du formateur</th><th>Date de l'inventaire</th><th>Prêté à</th><th>Archive</th><th>Supprimer</th></tr></thead>
+      <tbody>${body}</tbody>
+    </table></div>
+  </div>`;
+}
+function renderSuivi(){
+  const L=canWriteNow()?legacyData():null;
+  const imp=L?`<div class="import-box">Des données enregistrées uniquement sur cet appareil ont été trouvées (${L.nArch} archive(s), ${L.nRec} formulaire(s) en cours). <button class="action" id="importBtn" type="button">Importer dans le stockage partagé</button></div>`:'';
+  document.getElementById('main').innerHTML = imp +
+    suiviTable('annuel','Suivi — Inventaires annuels') + suiviTable('formation','Suivi — Inventaires formation');
+}
+
+function buildPdfBlob(entry){
+  const { jsPDF }=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'a4'});
+  const marginX=40, pageW=515, pageH=doc.internal.pageSize.getHeight();
+  let y=50;
+  function line(text,size,bold){
+    doc.setFontSize(size||10); doc.setFont(undefined,bold?'bold':'normal');
+    const wrapped=doc.splitTextToSize(text,pageW);
+    wrapped.forEach(w=>{
+      if(y>pageH-40){ doc.addPage(); y=50; }
+      doc.text(w,marginX,y); y+=(size||10)*1.35;
+    });
+  }
+  line("Registre d'inventaire — Lot PSC / STG",15,true);
+  line(`Site : ${entry.siteName}`,11);
+  line(`Lot : ${entry.lot==='S'?'STG (SauveTaGe)':'PSC'}`,11);
+  line(`Type d'inventaire : ${entry.type==='annuel'?'Annuel':'Formation'}`,11);
+  line(`Nom, prénom du formateur : ${entry.formateur||'—'}`,11);
+  line(`Date de l'inventaire : ${entry.date||'—'}`,11);
+  line(`Prêté à : ${entry.pretea||'—'}`,11);
+  line(`Archivé le : ${entry.validatedAt||'—'}`,11);
+  y+=8;
+  [['P','LOT PSC'],['S','LOT STG (SauveTaGe)']].filter(x=>x[0]===(entry.lot||x[0])).forEach(([lotCode,label])=>{
+    line(label,13,true);
+    ITEMS.forEach((it,i)=>{
+      if(it[2]!==lotCode) return;
+      const rec=(entry.items||{})[i]||{};
+      const statusLabel={P:'Présent',M:'Manquant',H:'HS'}[rec.status]||'Non renseigné';
+      let txt=`- ${it[0]} — ${statusLabel}`;
+      if(rec.qty) txt+=` — Qté : ${rec.qty}`;
+      if(rec.marque||rec.numero) txt+=` — Marque : ${rec.marque||'—'} / N° : ${rec.numero||'—'}`;
+      if(rec.comment) txt+=` — Commentaire : ${rec.comment}`;
+      if(rec.photo) txt+=` (photo jointe)`;
+      line(txt,9);
+    });
+    y+=6;
+  });
+  return doc.output('blob');
+}
+async function exportArchivePdf(id){
+  const entry=(store.archives||[]).find(a=>a.id===id);
+  if(!entry) return;
+  if(typeof window.jspdf==='undefined'){ alert('Génération PDF indisponible (bibliothèque non chargée — vérifiez la connexion).'); return; }
+  const blob=buildPdfBlob(entry);
+  const filename=`inventaire_${entry.lot==='S'?'STG':'PSC'}_${entry.type}_${entry.siteName}_${entry.date||entry.validatedAt||''}.pdf`.replace(/[^\w.\-]+/g,'_');
+  try{
+    if(typeof window.claude==='undefined'||!window.claude.use){ alert('Téléchargement indisponible dans cette vue.'); return; }
+    const dl=await window.claude.use('downloads');
+    if(!dl){ alert('Téléchargement indisponible dans cette vue.'); return; }
+    await dl.save({filename,data:blob});
+  }catch(err){ /* déclin ou erreur : rien à faire */ }
+}
+
+function updateNav(){
+  document.getElementById('navPSC').classList.toggle('active', viewMode==='form' && activeLot==='P');
+  document.getElementById('navSTG').classList.toggle('active', viewMode==='form' && activeLot==='S');
+  document.getElementById('navRecap').classList.toggle('active', viewMode==='recap');
+  document.getElementById('navSuivi').classList.toggle('active', viewMode==='suivi');
+  document.getElementById('navQR').classList.toggle('active', viewMode==='qr');
+}
+
+function renderAll(){
+  updateNav();
+  if(document.body&&document.body.classList) document.body.classList.toggle('ro',!canWriteNow());
+  const main=document.getElementById('main');
+  const controlsEl=document.querySelector('.controls');
+  const summaryEl=document.getElementById('summary');
+  const validateBtn=document.getElementById('validateBtn');
+  const validateWarn=document.getElementById('validateWarn');
+  if(viewMode==='recap' || viewMode==='suivi' || viewMode==='qr'){
+    controlsEl.style.display='none'; summaryEl.style.display='none'; validateBtn.style.display='none'; validateWarn.style.display='none';
+    main.className='recap-mode';
+    if(viewMode==='recap') renderRecap(); else if(viewMode==='suivi') renderSuivi(); else renderQrPage();
+  } else {
+    controlsEl.style.display=''; summaryEl.style.display=''; validateBtn.style.display='';
+    main.className='';
+    renderControls(); renderMain(); renderSummary();
+    const d=getSiteData(siteIdx);
+    const ready=lotComplete(d,activeLot);
+    validateWarn.textContent="⚠ Complétez toutes les rubriques du lot "+(activeLot==='P'?'PSC':'STG')+" avant de valider l'inventaire.";
+    validateBtn.disabled=!ready||!canWriteNow();
+    validateWarn.style.display=ready?'none':'';
+  }
+}
+
+/* ---------- événements ---------- */
+document.getElementById('navPSC').addEventListener('click',()=>{ setLot('P'); viewMode='form'; renderAll(); });
+document.getElementById('navSTG').addEventListener('click',()=>{ setLot('S'); viewMode='form'; renderAll(); });
+document.getElementById('navRecap').addEventListener('click',()=>{ viewMode='recap'; renderAll(); });
+document.getElementById('navSuivi').addEventListener('click',()=>{ viewMode='suivi'; renderAll(); });
+document.getElementById('navQR').addEventListener('click',()=>{ viewMode='qr'; renderAll(); });
+document.getElementById('camCancel').addEventListener('click',closeCam);
+document.getElementById('camFile').addEventListener('click',()=>document.getElementById('fallbackFile').click());
+document.getElementById('camSnap').addEventListener('click',()=>{
+  const v=document.getElementById('camVideo');
+  if(!v.videoWidth) return;
+  const scale=Math.min(1,800/v.videoWidth);
+  const c=document.createElement('canvas'); c.width=Math.round(v.videoWidth*scale); c.height=Math.round(v.videoHeight*scale);
+  c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+  const url=shrinkCanvas(c); const idx=camIdx; closeCam(); savePhoto(idx,url);
+});
+document.getElementById('fallbackFile').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const idx=camIdx;
+  compressPhoto(f,url=>{ closeCam(); savePhoto(idx,url); });
+  e.target.value='';
+});
+
+document.getElementById('site').addEventListener('change',e=>{ siteIdx=parseInt(e.target.value,10); renderAll(); });
+document.querySelector('.controls').addEventListener('change',e=>{
+  if(e.target && e.target.name==='invtype' && canWriteNow()){ patchRecord({type:e.target.value},true); }
+});
+['formateur','date','pretea'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',e=>{
+    if(!canWriteNow()) return;
+    patchRecord({[id]:e.target.value});
+  });
+});
+
+document.getElementById('main').addEventListener('click',async e=>{
+  const statusBtn=e.target.closest('.status-btn');
+  if(statusBtn){
+    if(!canWriteNow()) return;
+    const idx=parseInt(statusBtn.dataset.idx,10), code=statusBtn.dataset.code;
+    const cur=getSiteData(siteIdx).items[idx]||{};
+    const ref=(ITEMS[idx]&&ITEMS[idx][1])||'';
+    const status=cur.status===code?null:code;
+    let qty=cur.qty;
+    if(!status) qty=''; else if(status==='P'||isEmptyVal(qty)) qty=ref;
+    patchRecord({items:{[idx]:{status,qty}}},true);
+    renderAll();
+    return;
+  }
+  const secEl=e.target.closest('.sec-toggle');
+  if(secEl){
+    const k=activeLot+'_'+secEl.dataset.sec;
+    collapsedSec[k]=!collapsedSec[k];
+    renderMain();
+    return;
+  }
+  const toggleBtn=e.target.closest('.toggle-btn');
+  if(toggleBtn){
+    const lot=toggleBtn.dataset.lot;
+    collapsed[lot]=!collapsed[lot];
+    renderMain();
+    return;
+  }
+  const photoRemove=e.target.closest('.photo-remove');
+  if(photoRemove){
+    if(!canWriteNow()) return;
+    const idx=parseInt(photoRemove.dataset.idx,10);
+    const old=(getSiteData(siteIdx).items[idx]||{}).photo;
+    patchRecord({items:{[idx]:{photo:null}}},true);
+    if(old) DB.doc('photos/'+old).delete().catch(()=>{});
+    renderMain();
+    return;
+  }
+  const photoBtn=e.target.closest('.photo-btn');
+  if(photoBtn){
+    if(!canWriteNow()){ alert("Enregistrement impossible : stockage partagé indisponible ou accès en lecture seule."); return; }
+    openCamera(parseInt(photoBtn.dataset.photoIdx,10)); return;
+  }
+  const qrCopy=e.target.closest('.qr-copy');
+  if(qrCopy){
+    const done=()=>{ qrCopy.textContent='Lien copié ✓'; setTimeout(()=>{ qrCopy.textContent='Copier le lien'; },1800); };
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(lotLink(qrCopy.dataset.copy)).then(done).catch(()=>{}); }
+    return;
+  }
+  const importBtn=e.target.closest('#importBtn');
+  if(importBtn){ importBtn.disabled=true; importBtn.textContent='Import en cours…'; await importLegacy(); return; }
+  const archiveBtn=e.target.closest('.archive-btn[data-id]');
+  if(archiveBtn){
+    exportArchivePdf(archiveBtn.dataset.id);
+    return;
+  }
+  const delBtn=e.target.closest('[data-del-id]');
+  if(delBtn){
+    if(!canWriteNow()) return;
+    if(!confirm('Supprimer définitivement cet inventaire archivé ?')) return;
+    const id=delBtn.dataset.delId;
+    const a=(store.archives||[]).find(x=>x.id===id);
+    try{
+      if(a) Object.keys(a.items||{}).forEach(k=>{ const ph=a.items[k]&&a.items[k].photo; if(ph) DB.doc('photos/'+ph).delete().catch(()=>{}); });
+      await DB.collection('archives').doc(id).delete();
+      store.archives=(store.archives||[]).filter(x=>x.id!==id);
+    }catch(err){ alert("Suppression impossible ("+((err&&err.code)||'erreur')+")."); }
+    renderSuivi();
+    return;
+  }
+});
+document.getElementById('main').addEventListener('input',e=>{
+  const inp=e.target.closest('.field-input'); if(!inp) return;
+  if(!canWriteNow()) return;
+  const idx=parseInt(inp.dataset.idx,10), field=inp.dataset.field;
+  patchRecord({items:{[idx]:{[field]:inp.value}}});
+});
+document.getElementById('main').addEventListener('change',e=>{
+  if(e.target && e.target.id==='qrBase'){
+    try{ localStorage.setItem('psc_stg_qrbase',e.target.value.trim()); }catch(err){}
+    renderQrPage();
+  }
+});
+
+document.getElementById('validateBtn').addEventListener('click',async()=>{
+  if(!canWriteNow()) return;
+  const d=getSiteData(siteIdx);
+  const label=d.type==='formation'?'formation':'annuel';
+  const lotLabel=activeLot==='P'?'PSC':'STG';
+  if(!lotComplete(d,activeLot)){
+    alert("Impossible de valider : toutes les rubriques du lot "+lotLabel+" doivent être renseignées (statut Présent, Manquant ou HS pour chaque article) avant validation.");
+    return;
+  }
+  if(!confirm("Valider l'inventaire "+label+" du lot "+lotLabel+" de "+SITES[siteIdx]+" ?\nLes données seront archivées dans le suivi des inventaires (stockage partagé) et le formulaire sera vidé pour une nouvelle saisie.")) return;
+  const key=recKey(siteIdx);
+  const entry={
+    id:'a'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+    ts:Date.now(),
+    site:siteIdx,
+    siteName:SITES[siteIdx],
+    type:label,
+    lot:activeLot,
+    formateur:d.formateur||'',
+    date:d.date||'',
+    pretea:d.pretea||'',
+    items:normItems(splitItems(clone(d.items||{}),activeLot)),
+    validatedAt:new Date().toLocaleDateString('fr-FR')
+  };
+  const btn=document.getElementById('validateBtn'); btn.disabled=true;
+  try{
+    if(pend[key]){ clearTimeout(pend[key].timer); delete pend[key]; }
+    await DB.collection('archives').doc(entry.id).set(entry);
+    await DB.doc('records/'+key).set(emptyRecord());
+    store.records[key]=emptyRecord(); recordExists[key]=true;
+    if(!store.archives.some(a=>a.id===entry.id)) store.archives.push(entry);
+    setSync('Inventaire validé et archivé ✓');
+  }catch(err){
+    alert("Validation non enregistrée ("+((err&&err.code)||'erreur')+"). Réessayez.");
+  }
+  renderAll();
+});
+document.getElementById('printBtn').addEventListener('click',()=>window.print());
+
+applyUrlParams();
+renderAll();
+setSync('Connexion au stockage partagé…');
+initDb();
+</script>
+</body>
+</html>
